@@ -1,3 +1,7 @@
+/**
+ * buscadorIncremental Hará la busqueda de elementos que le digamos, con los parametros y nodos que indiquemos
+ * @author Yahir Axel Garcia Keymurth 20-Jun-2019
+ */
 function buscadorIncremental()
 {
 	/**
@@ -11,35 +15,49 @@ function buscadorIncremental()
 	 */
 	aParametros = [];
 	/**
+	 * aValores Guardara los valores de la busqueda en un array
+	 * @type {Array}
+	 */
+	aValores = []
+	/**
 	 * busca Ajustara la configuración del buscador
 	 * @param  {String} cBuscador será el nombre del input que le traera los parametros
-	 * @return {[type]}           [description]
 	 */
 	this.busca = function(cBuscador = "")
 	{
 		var cBusqueda = document.querySelector(`input[name='${cBuscador}'`);
+		var cCampoValor = document.querySelectorAll(`[data-search]`);
+		aParametros.forEach(function(aData){
+			$(`[${aData['parametro']}]`).each(function(iCount, cElement){
+				var cValor = cElement.getAttribute(aData['parametro'])
+				aValores.push(cValor);
+			});
+		});
+		console.log(aValores)
 		cBusqueda.onkeyup = this.realizaBusqueda;
 	}
 	/**
 	 * realizaBusqueda 
-	 * @param  {[type]} keyPress [description]
-	 * @return {[type]}          [description]
+	 * @param  {Object} keyPress Es el objeto que dice que tecla es la que fue presionada
 	 */
 	this.realizaBusqueda = function(keyPress = null)
 	{
 		var cDataBusqueda = this.value;	
-		console.log(aParametros)
+		console.log(document.querySelector(`[data-search]`))
 	}
 	/**
 	 * parametro Guardara los parametros en los que tengamos que buscar
 	 * @param  {String} cParametro Será el parametro en el que tengamos que buscar
 	 */
-	this.parametro = function(cParametro = "")
+	this.parametro = function(cParametro = "", cNodo = "")
 	{
-		aParametros.push(cParametro);
+		add = {
+			'parametro' : cParametro,
+			'nodo' : cNodo
+		}
+		aParametros.push(add);
 	}
 }
 prueba = new buscadorIncremental();
-prueba.parametro("data-search");
-prueba.parametro("data-hi");
+prueba.parametro("data-search", 'li');
 prueba.busca('busquedaimplacable');
