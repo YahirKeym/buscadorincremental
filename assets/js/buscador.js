@@ -2,68 +2,112 @@
  * buscadorIncremental Hará la busqueda de elementos que le digamos, con los parametros y nodos que indiquemos
  * @author Yahir Axel Garcia Keymurth 20-Jun-2019
  */
-function buscadorIncremental() {
+function buscadorIncremental(cFirtsClass = "",cSecondClass ="") {
     /**
      * _self Guardara el objeto de forma global
      * @type {object}
      */
     _self = this;
     /**
+     * cFirtsClass Será la clase que se afectuara a los campos seleccionados
+     * @type {String}
+     */
+    cFirtsClass = cFirtsClass
+    /**
+     * cSecondClass Será la clase que se afectuara cuando los campos nos sean seleccionados
+     * @type {String}
+     */
+    cSecondClass = cSecondClass
+    /**
      * aParametros Guardara los parametros de busqueda
      * @type {Array}
      */
-    aParametros = [];
+    aParametros = {};
     /**
      * aValores Guardara los valores de la busqueda en un array
      * @type {Array}
      */
     aValores = []
     /**
+     * iElemento Nos dirá en que elemento nos encotramos, empezando por 0
+     * @type {Number}
+     */
+    iElemento = -1;
+    /**
+     * [iBloquea description]
+     * @type {Number}
+     */
+    iBloquea = 0;
+    forEach = Array.prototype.forEach;
+    cBusqueda = "";
+    cCampoValor = "";
+    cValorLimpio = "";
+    /**
      * busca Ajustara la configuración del buscador
      * @param  {String} cBuscador será el nombre del input que le traera los parametros
      */
-    this.busca = function(cBuscador = "") {
-        var cBusqueda = document.querySelector(`input[name='${cBuscador}'`);
-        var cCampoValor = document.querySelectorAll(`[data-search]`);
-        aParametros.forEach(function(aData) {
-            $(`[${aData['parametro']}]`).each(function(iCount, cElement) {
-                var cValor = cElement.getAttribute(aData['parametro'])
-                aValores.push(cValor);
-            });
-        });
-        console.log(aValores)
-        cBusqueda.onkeyup = this.realizaBusqueda;
+    this.busca = function(cBuscador = "", cParametro = "") {
+        aParametros['parametro'] = cParametro;
+        cBusqueda = document.querySelector(`input[name='${cBuscador}'`);
+        cCampoValor = document.querySelectorAll(`[${aParametros['parametro']}]`);
+        forEach = Array.prototype.forEach;
+        cBusqueda.addEventListener("keyup", this.keysUp);
     }
     /**
-     * realizaBusqueda 
-     * @param  {Object} keyPress Es el objeto que dice que tecla es la que fue presionada
+     * keysUp Serán las acciones después de pulsar x tecla en el input
      */
-    this.realizaBusqueda = function(keyPress = null) {
-        var cDataBusqueda = this.value;
-        var cDataCantidad = cDataBusqueda.length;
-        for (indice in aValores) {
-            var cDato = aValores[indice];
-            var cCadena = _self.quitaAcentos(cDato);
-            var cDatoValor = cCadena.substring(0, cDataCantidad);
-            if (cDataCantidad <= cDato.length && cDataCantidad != 0 && cDato != 0) {
-                if (cDataBusqueda.toLowerCase() == cDatoValor.toLowerCase()) {
-                    aParametros.forEach(function(element) {
-                        var elementOcultar = document.querySelector(`${element['nodo']}[${element['parametro']}='${aValores[indice]}']`);
-                        elementOcultar.style.display = "";
-                    })
-                } else {
-                    aParametros.forEach(function(element) {
-                        var elementOcultar = document.querySelector(`${element['nodo']}[${element['parametro']}='${aValores[indice]}']`);
-                        elementOcultar.style.display = "none";
-                    })
-                }
-            }
-            if (cDataCantidad == 0) {
-                aParametros.forEach(function(element) {
-                    var elementosMostrar = document.querySelector(`${element['nodo']}[${element['parametro']}='${aValores[indice]}']`);
-                    elementosMostrar.style.display = "";
+    this.keysUp = function() {
+        var cValor = this.value;
+        cValorLimpio = _self.quitaAcentos(cValor);
+        iBloquea = 0;
+        iElemento++;
+        forEach.call(cCampoValor, _self.muestraBuqueda);
+    }
+    /**
+     * muestraBuqueda Ayudara a ocultar y mostrar los elementos mediante la busqueda
+     * @param  {elementos} elements      Son los elementos que se encuentrar mediante la iteración
+     * @param  {number} iCountElement Es el valor númerico del elemento
+     */
+    this.muestraBuqueda = function(elements, iCountElement) {
+        var cValorSearch = elements.getAttribute(aParametros['parametro'])
+        var hiddenElement = document.querySelector(`[${aParametros['parametro']}='${cValorSearch}']`)
+        if (_self.quitaAcentos(elements.innerHTML.toLowerCase()).search(cValorLimpio.toLowerCase()) == -1) {
+            hiddenElement.classList.remove(cFirtsClass);
+            hiddenElement.classList.add(cSecondClass);
+        } else {
+            hiddenElement.classList.remove(cSecondClass);
+            hiddenElement.classList.add(cFirtsClass);
+        }
+        // if(_self.keysPress(key,iBloquea,hiddenElement, iCountElement, cCampoValor))
+        // {
+        //     iBloquea++
+        // }
+    }
+    /**
+     * [keysPress description]
+     * @param  {[type]} key              [description]
+     * @param  {Number} iBloquea         [description]
+     * @param  {String} elementoAtributo [description]
+     * @param  {Number} iCountElement    [description]
+     * @param  {String} cCampoValor      [description]
+     * @return {[type]}                  [description]
+     */
+    this.keysPress = function(key = null, iBloquea = 0, elementoAtributo = "", iCountElement = 0, cCampoValor = "") {
+        if (key.keyCode === 40 && iBloquea === 0) {
+            var atributeStyle = elementoAtributo.getAttribute('class');
+            var lRegreso = false;
+            if (atributeStyle == "visible" && iCountElement == iElemento) {
+                forEach.call(cCampoValor, function(element) {
+                    element.classList.remove('verde')
                 })
+                elementoAtributo.classList.add("verde");
+                console.log(elementoAtributo)
+                lRegreso = true;
             }
+            console.log(atributeStyle)
+            console.log(iElemento)
+            console.log(iCountElement)
+            return lRegreso;
         }
     }
     /**
@@ -84,15 +128,9 @@ function buscadorIncremental() {
      * parametro Guardara los parametros en los que tengamos que buscar
      * @param  {String} cParametro Será el parametro en el que tengamos que buscar
      */
-    this.parametro = function(cParametro = "", cNodo = "") {
-        add = {
-            'parametro': cParametro,
-            'nodo': cNodo
-        }
-        aParametros.push(add);
+    this.parametro = function(cParametro = "") {
+        
     }
 }
-prueba = new buscadorIncremental();
-prueba.parametro("data-search", 'li');
-
-prueba.busca('busquedaimplacable');
+prueba = new buscadorIncremental("visible","novisible");
+prueba.busca('busquedaimplacable', "data-search");
