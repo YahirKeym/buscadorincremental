@@ -24,23 +24,34 @@ function buscadorIncremental(cFirtsClass = "",cSecondClass ="") {
      */
     aParametros = {};
     /**
-     * aValores Guardara los valores de la busqueda en un array
-     * @type {Array}
-     */
-    aValores = []
-    /**
      * iElemento Nos dirá en que elemento nos encotramos, empezando por 0
      * @type {Number}
      */
     iElemento = -1;
     /**
-     * [iBloquea description]
+     * iBloquea description]
      * @type {Number}
      */
     iBloquea = 0;
+    /**
+     * forEach Será la función forEach para hacer la repetición de elementos
+     * @type {Function}
+     */
     forEach = Array.prototype.forEach;
+    /**
+     * cBusqueda Será el elemento en este caso input donde se escribirá la busqueda
+     * @type {String}
+     */
     cBusqueda = "";
+    /**
+     * cCampoValor Serán los elementos en donde se hará la busqueda
+     * @type {String}
+     */
     cCampoValor = "";
+    /**
+     * cValorLimpio Será los elementos sin Acentos
+     * @type {String}
+     */
     cValorLimpio = "";
     /**
      * busca Ajustara la configuración del buscador
@@ -50,7 +61,6 @@ function buscadorIncremental(cFirtsClass = "",cSecondClass ="") {
         aParametros['parametro'] = cParametro;
         cBusqueda = document.querySelector(`input[name='${cBuscador}'`);
         cCampoValor = document.querySelectorAll(`[${aParametros['parametro']}]`);
-        forEach = Array.prototype.forEach;
         cBusqueda.addEventListener("keyup", this.keysUp);
     }
     /**
@@ -78,37 +88,6 @@ function buscadorIncremental(cFirtsClass = "",cSecondClass ="") {
             hiddenElement.classList.remove(cSecondClass);
             hiddenElement.classList.add(cFirtsClass);
         }
-        // if(_self.keysPress(key,iBloquea,hiddenElement, iCountElement, cCampoValor))
-        // {
-        //     iBloquea++
-        // }
-    }
-    /**
-     * [keysPress description]
-     * @param  {[type]} key              [description]
-     * @param  {Number} iBloquea         [description]
-     * @param  {String} elementoAtributo [description]
-     * @param  {Number} iCountElement    [description]
-     * @param  {String} cCampoValor      [description]
-     * @return {[type]}                  [description]
-     */
-    this.keysPress = function(key = null, iBloquea = 0, elementoAtributo = "", iCountElement = 0, cCampoValor = "") {
-        if (key.keyCode === 40 && iBloquea === 0) {
-            var atributeStyle = elementoAtributo.getAttribute('class');
-            var lRegreso = false;
-            if (atributeStyle == "visible" && iCountElement == iElemento) {
-                forEach.call(cCampoValor, function(element) {
-                    element.classList.remove('verde')
-                })
-                elementoAtributo.classList.add("verde");
-                console.log(elementoAtributo)
-                lRegreso = true;
-            }
-            console.log(atributeStyle)
-            console.log(iElemento)
-            console.log(iCountElement)
-            return lRegreso;
-        }
     }
     /**
      * quitaAcentos Nos ayudara a quitar los acentos de la cadena para poder hacer la busqueda de manera correcta
@@ -124,13 +103,4 @@ function buscadorIncremental(cFirtsClass = "",cSecondClass ="") {
         cCadena = cCadena.replace(/ñ/gi, "n");
         return cCadena;
     }
-    /**
-     * parametro Guardara los parametros en los que tengamos que buscar
-     * @param  {String} cParametro Será el parametro en el que tengamos que buscar
-     */
-    this.parametro = function(cParametro = "") {
-        
-    }
 }
-prueba = new buscadorIncremental("visible","novisible");
-prueba.busca('busquedaimplacable', "data-search");
